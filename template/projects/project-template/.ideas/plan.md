@@ -1,5 +1,5 @@
 # {PROJECT} development plan
-updated: {DATE} / owner: leader
+updated: {DATE} / owner: lead
 
 ## Milestones
 | M | Goal | When | Done when |
@@ -9,10 +9,10 @@ updated: {DATE} / owner: leader
 | M3 | {finish + minimal release} | ... | ... |
 
 ## Cycle rules
-- worker works only on the current milestone's tasks in todo.md.
-- At milestone end: leader reviews DONE tasks, writes the rollup below, issues the next batch.
+- pair works only on the current milestone's tasks in todo.md.
+- At milestone end: lead reviews DONE tasks, writes the rollup below, issues the next batch.
 
-## Retrospective rollups (leader)
+## Retrospective rollups (lead)
 ### M1
 - (schedule / process findings / risks / lessons promoted to shared memory)
 ### M2

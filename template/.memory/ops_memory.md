@@ -1,7 +1,7 @@
 # ops long-term memory (desktop-assistant session)
 updated: {DATE}
 
-On return: read the leader snapshot and the active project's `todo.md` first, then this file.
+On return: read the lead snapshot and the active project's `todo.md` first, then this file.
 Record task results in `todo.md`; record ops-specific know-how here.
 
 ## Environment notes

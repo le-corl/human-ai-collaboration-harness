@@ -1,5 +1,5 @@
 # {PROJECT} spec — "{TITLE}"
-updated: {DATE} / author: leader
+updated: {DATE} / author: lead
 
 ## 1. Overview
 | Item | Value |
