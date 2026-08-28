@@ -39,6 +39,7 @@ The harness instructions remain in English. Downstream project documents and use
 | `collaboration/decisions.md` | Dated discussion outcomes, changes, and reversals |
 | `collaboration/worklog.md` | Implementation, command, verification, and failure evidence |
 | `collaboration/memory/` | Concise role continuity and reusable collaboration knowledge |
+| `collaboration/feedback/{role}.md` | Role-local confidence event evidence, read only for feedback processing or retrospective review |
 | `project/` | Actual development-project root: source, assets, tests, configuration, and project-owned documents |
 
 Keep decisions separate from implementation. Record whether an item is a `decision`, `implementation`, `verification`, or `user approval`.
@@ -56,9 +57,43 @@ Location follows lifecycle, not subject matter or authorship. A file belongs ins
 | `work` | Implement, verify, and report completion of `practical` work | Expand scope without approval or infer user approval |
 | `ops` | Prepare external consoles, browser workflows, documents, and releases; record owned results | Issue product plans or perform irreversible submission for the user |
 
-When one agent must take multiple roles, state the transition first and preserve each role's file authority. When practical, separate review from implementation across sessions or subagents.
+Prefer assigning roles to separate sessions or agents when the project can support the overhead. Select model capability for the role's judgment, explanation, autonomous execution, and tool-access needs; model choice is part of role assignment, not a replacement for role boundaries.
 
-## 4. Working method
+When one agent takes multiple roles, state each transition and preserve every role's file authority. Every substantive assistant response has one accountable `response owner role`. A feedback skill applies to that owner unless the user explicitly names another role. Feedback processing is a meta-operation and does not become the response owner. When practical, separate review from implementation across sessions or agents.
+
+## 4. Collaboration confidence
+
+Collaboration confidence controls how independently a role acts and how much interaction it requires with the current user in this project. It is not factual certainty, general model ability, or permission to exceed the selected profile, role boundaries, verification requirements, or external-action authority.
+
+Each file in `collaboration/memory/` stores that role's current calibration:
+
+- Confidence: starts once at `50%`.
+- Feedback samples: starts at `0`.
+- Last calibrated date.
+- Current executor: provider and model when known.
+- Active interaction adjustments: only concise rules that should affect future responses.
+
+Later sessions inherit the stored role value. Values never transfer across roles or projects. When the project objective or assigned provider/model changes materially, move the affected role's value halfway toward `50%`, rounded to a whole number, and record the reason.
+
+Apply the value using these bands:
+
+- `20–39`, cautious: expose more assumptions, recheck relevant local state, use smaller reversible steps, and add checkpoints where a mismatch changes the result.
+- `40–60`, balanced: use the selected profile's normal risk-proportional workflow.
+- `61–80`, trusted: reduce repeated confirmation and explanation, reuse recently verified stable context, act directly within approved reversible scope, and make one additional evidence-based recommendation when disagreement remains.
+
+High confidence may reduce redundant interaction, never evidence required by risk. Low confidence increases verification and dialogue; it does not require agreement with an unsupported user claim.
+
+Only an explicit `feedback-up` or `feedback-down` invocation changes the score. Ordinary praise or criticism does not.
+
+- `feedback-up`: `+5`, capped at `80`.
+- `feedback-down`: `-10`, floored at `20`.
+- Count one sample per non-duplicate feedback event.
+
+Apply feedback to the immediately preceding substantive assistant response and its observed result. If the owner role cannot be identified, ask the user to specify `lead`, `learn`, `work`, or `ops` before writing. Do not treat user approval as technical verification or rewrite verified facts to match the signal.
+
+Update only the target role's memory and `collaboration/feedback/{role}.md`. Normal role startup reads the concise calibration in memory, not the raw feedback log. Promote a lesson to this file only when the user declares it project-wide or repeated evidence shows that it applies across roles.
+
+## 5. Working method
 
 - Continue the current user request or active task. Resolve an existing `BLOCKED` item first only when it blocks the current work.
 - Follow the selected profile for tracking depth, parallelism, and explanation level.
@@ -67,14 +102,14 @@ When one agent must take multiple roles, state the transition first and preserve
 - If bounded investigation cannot establish the cause, record the evidence and mark the work `BLOCKED` instead of applying a guessed fix.
 - Preserve user changes and unrelated dirty-worktree content.
 
-## 5. Profile routing
+## 6. Profile routing
 
 - `learning` uses `collaboration/profiles/learning.md` and `learn`.
 - `practical` uses `collaboration/profiles/practical.md` and `work`.
 - `mixed` uses only the profile document and role assigned to the current task.
 - Profile documents define only differing defaults; they do not repeat these common rules.
 
-## 6. Facts and verification
+## 7. Facts and verification
 
 - Evidence priority: actual target environment > official documentation > primary sources > search results > AI memory.
 - Verify policies, prices, versions, console UI, and platform requirements against current official sources when they are used.
@@ -83,17 +118,17 @@ When one agent must take multiple roles, state the transition first and preserve
 - Use deterministic tests or simulations for randomness, time, and boundary behavior.
 - Before release, compare current source with artifact creation time, version, internal manifest, size, and hash.
 
-## 7. External state and Git
+## 8. External state and Git
 
 - Confirm user authority and intent before irreversible external actions involving accounts, publication, submission, review requests, payment, or messages.
 - Commit policy: {COMMIT_POLICY}
 - Push policy: {PUSH_POLICY}
 - Before destructive file operations, verify the exact target and recovery path.
 
-## 8. Document lifecycle
+## 9. Document lifecycle
 
 - Keep only currently true conditions in `brief.md`. Move superseded choices to `decisions.md`.
 - Keep only the current milestone and recent results in `tasks.md`. Move closed tables to `collaboration/archive/`.
 - Keep evidence in `worklog.md` at the depth required by the selected profile; archive it by milestone when useful.
-- Role memories contain only the next-session starting point and reusable principles. Do not duplicate the full worklog.
+- Role memories contain only the current calibration, next-session starting point, and reusable principles. Keep raw calibration events in the matching role feedback file and archive closed detail when useful.
 - After project completion, write a case using the source harness repository's `cases/_template.md` and promote only general lessons into the harness.

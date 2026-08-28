@@ -26,6 +26,7 @@ copied-template/
 ├── collaboration/            # AI-collaboration state and history
 │   ├── profiles/
 │   ├── memory/
+│   ├── feedback/
 │   ├── brief.md
 │   ├── plan.md
 │   ├── tasks.md
@@ -62,6 +63,15 @@ Profiles change defaults, not human authority. Scope expansion, costs, publicati
 - `ops`: prepares browser, console, release, document, and other operational work within confirmed authority.
 
 Codex and Claude use separate adapter directories, but share the same contract, profiles, project state, and methodology.
+
+## Adaptive autonomy
+
+Each role begins with `50%` collaboration confidence for the current user and project. This value represents earned autonomy in that relationship, not factual certainty or general model ability.
+
+- `feedback-up` records an explicitly approved response and result, then raises the owner role's score by 5.
+- `feedback-down` records an explicitly rejected or misaligned response and result, then lowers the owner role's score by 10.
+
+Higher confidence reduces repeated confirmation and lets the role act more directly on approved, reversible work. Lower confidence increases visible assumptions, checks, and checkpoints. No score changes evidence standards, learning guardrails, or authority for irreversible actions. See [the methodology](METHODOLOGY.md#3-role-scoped-collaboration-confidence) for attribution and storage rules.
 
 ## Repository layout
 

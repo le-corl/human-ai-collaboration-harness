@@ -31,6 +31,14 @@ Write this file from the actual `brief`, `plan`, `tasks`, `decisions`, and `work
 
 {Repeat for 3–7 episodes.}
 
+## Calibration outcomes
+
+| Role | Starting confidence | Ending confidence | Feedback samples | Behavioral effect |
+|---|---:|---:|---:|---|
+| {lead / learn / work / ops} | {PERCENT} | {PERCENT} | {COUNT} | {What reduced unnecessary interaction or added needed dialogue} |
+
+{Describe only meaningful calibration events. Separate user preference, verified outcome, agent error, user-premise error, shared mismatch, and external change where that distinction affected the lesson.}
+
 ## Results
 
 - {Verifiable implementation, release, submission, and test status}

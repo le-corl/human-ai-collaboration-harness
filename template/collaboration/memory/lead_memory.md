@@ -2,6 +2,19 @@
 
 updated: {YYYY-MM-DD}
 
+## Collaboration calibration
+
+- Confidence: `50%`
+- Feedback samples: `0`
+- Last calibrated: `Never`
+- Current executor: `{PROVIDER_AND_MODEL_OR_UNKNOWN}`
+
+### Active interaction adjustments
+
+- None.
+
+This calibration belongs only to `lead` in this project. Apply the confidence band from `PROJECT_RULES.md`; do not read the raw feedback log during normal role startup.
+
 ## Reusable planning principles
 
 - {Only principles that apply beyond one task or project detail.}
