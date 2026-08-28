@@ -1,7 +1,7 @@
-# Claude entrypoint
+# Codex entrypoint
 
 1. Read `PROJECT_RULES.md` completely before starting work when it exists.
-2. Before selecting any other role, invoke `/init` automatically when any of these is true:
+2. Before selecting any other role, invoke `$init` automatically when any of these is true:
    - `PROJECT_RULES.md` is missing.
    - `Harness state > Status` is absent or not `ACTIVE`.
    - Any required contract value is blank or still a template placeholder: current objective, collaboration profile, project-document language, code language, commit policy, or push policy.
@@ -11,9 +11,9 @@
    - `practical`: `collaboration/profiles/practical.md`
    - `mixed`: read the one profile matching the active task's `task mode`. Ask the user if the mode is unset.
 5. If the user did not select a role, choose from the request and active profile, then state the choice:
-   - planning, scope, or review: `/lead`
-   - `learning` implementation support: `/learn`
-   - `practical` implementation and delivery: `/work`
-   - external consoles and operational deliverables: `/ops`
+   - planning, scope, or review: `$lead`
+   - `learning` implementation support: `$learn`
+   - `practical` implementation and delivery: `$work`
+   - external consoles and operational deliverables: `$ops`
 6. Subject to platform and safety constraints, precedence is: the user's latest instruction, project-specific contract in `PROJECT_RULES.md`, selected profile, then role skill.
 7. Treat `project/` as the actual development-project root. Keep AI-managed plans and history in `collaboration/`; place a document inside `project/` only when the project still needs it without this harness.

@@ -1,44 +1,44 @@
-# Case study: {FAMILIAR_TOOL} → {TARGET_TOOL} in {TIMEFRAME}
+# Case study: {STARTING_POINT} → {TARGET} ({TIMEFRAME})
 
-> **How to fill this in:** hand this file to the AI session(s) that actually worked the project
-> and ask them to fill each section from the work logs (`todo.md`, the pair log, `plan.md` rollups).
-> Name the engine, the APIs, and the error messages verbatim — **specifics are the evidence**;
-> a case that could describe any tool describes none. Strip only what's private: accounts,
-> revenue plans, unreleased product details.
->
-> File naming: `docs/cases/<familiar>-to-<target>.md`. Contributions via PR are welcome —
-> delete this note block before submitting.
+updated: {YYYY-MM-DD}
+
+Write this file from the actual `brief`, `plan`, `tasks`, `decisions`, and `worklog`. Remove account details, personal data, and private business information, but preserve tool names, APIs, error text, and numbers as evidence.
 
 ## Context
 
-| | |
+| Item | Detail |
 |---|---|
-| Learner | {background; prior experience with the target tool} |
-| Goal | {what "done" meant — and what was explicitly a non-goal} |
-| Scope | {the project, feature count, one line} |
-| Time | {calendar time, intensity} |
-| Setup | {tooling, source control, which AI hosts served lead/pair/ops} |
-| Models | lead: {model, tier}; pair: {model, tier} |
+| User background | {Prior experience and what was new in the target domain} |
+| Objective | {Definition of done and explicit non-goals} |
+| Scope | {One-line product or learning project scope} |
+| Duration | {Calendar duration and work intensity} |
+| Environment | {OS, tools, repository, external consoles} |
+| AI setup | {Provider, lead/learn/work/ops arrangement, collaboration profile} |
 
-{1–2 paragraphs: how the spec mapped features to learning goals, and anything unusual
-about the setup — e.g. editor automation (MCP) availability, mid-project rule changes.}
+## Harness application
 
-## Episodes
+{In 1–3 paragraphs, explain which documents were authoritative, why the profile was selected, how roles were separated, and how task modes changed in a mixed project.}
 
-{3–6 episodes. The best ones are failures with root causes. Per episode:}
+## Key episodes
 
-### {N}. {Short, concrete title}
-{What happened — symptoms first, verbatim errors if any.}
-{Root cause — the actual mechanism, not the patch.}
-{Who did what — what the AI contributed vs. what the human decided/built.}
-**Lesson:** {the transferable principle, one or two sentences.}
+### 1. {Specific symptom-centered title}
 
-## Outcomes
+{Write in this order: symptom → investigation → actual cause → fix or decision → verification. Separate human and AI contributions.}
 
-- {Verifiable results: features shipped, published/released state, tests passed.}
-- {Knowledge captured: how many principles recorded, which ones the next project reuses.}
-- {Harness performance: milestones, tasks, sessions, context losses (ideally zero).}
+**Principle to promote:** {One or two sentences that apply to other projects.}
 
-## What we'd change
+{Repeat for 3–7 episodes.}
 
-- {Frictions found and the planned structural fix, if any.}
+## Results
+
+- {Verifiable implementation, release, submission, and test status}
+- {Knowledge recorded and reused in the next project}
+- {Milestone, task, and session handoff outcomes}
+
+## Harness changes promoted
+
+- {How this experience changed rules, templates, or role boundaries}
+
+## What to change next time
+
+- {Friction and structural improvements, written as defaults for the next project rather than a generic retrospective.}

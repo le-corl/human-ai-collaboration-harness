@@ -1,96 +1,135 @@
-# Methodology
+# Human-AI collaboration harness methodology
 
-The harness is a set of conventions over plain files. This document is the full system; the [cases](cases/) show it running — start with [Unity → Roblox](cases/unity-to-roblox.md).
+updated: 2026-08-28
 
-## 1. Why sessions need roles
+This harness is a plain-text protocol for managing **collaboration profiles, roles, file ownership, evidence, and handoff**, independent of any AI product. Its goal is to preserve decisions and state across sessions while synchronizing the user's and AI's observable thinking, expression, judgment, and execution in both directions. AI thinking here means visible assumptions, problem decomposition, decision rationale, constraints, and options—not hidden chain-of-thought.
 
-A single "do everything" AI session drifts: it plans, then implements its own plan, then grades its own work. Splitting by role creates the review boundary that a solo learner otherwise lacks:
+## 1. Provider-neutral core and adapters
 
-| Role | Does | Never does | Suggested model tier |
+`PROJECT_RULES.md` is the single source of truth for the current project contract and common rules. Automatically loaded files such as `AGENTS.md` and `CLAUDE.md` are thin adapters that check initialization state, then load only the required profile document and provider-specific role skill.
+
+Changing providers must not require converting the product plan or work records. Only the entrypoint and skill location change.
+
+### Initialization routing
+
+`PROJECT_RULES.md` begins as `UNINITIALIZED`. Before any normal role is selected, the entrypoint invokes `init` when the file is missing, the status is not `ACTIVE`, or a required contract value remains blank or contains a template placeholder. Required values are the current objective, collaboration profile, project-document language, code language, commit policy, and push policy.
+
+`init` inspects existing project evidence first, asks once for decisions it cannot safely derive, writes the confirmed contract, and changes the status to `ACTIVE`. It then resumes the user's original request through the appropriate profile and role. An active, coherent contract is not reinitialized merely because an optional field is blank.
+
+## 2. Roles
+
+| Role | Owns | Does not do | Recommended model traits |
 |---|---|---|---|
-| **lead** | Maintains the roadmap and per-project plans, issues task batches, reviews finished work, rolls up lessons | Implements; touches the tool directly (read-only inspection at most) | Frontier / high-reasoning |
-| **pair** | Assists execution: snippets, step-by-step guides, verification, debugging, repetitive batch work | First implementations during a learning phase (§5.1); plan changes (may only propose) | Mid-tier (see §5.4) |
-| **ops** | Jobs the coding assistant can't do: browser/desktop automation, office-document deliverables, scheduled tasks, large research reports | Planning or issuing tasks (lead's exclusive right) | Either |
+| `lead` | Objectives, scope, milestones, decision documents, tracked task issuance, completion review | Change scope without approval or directly implement product features | Strong judgment and review |
+| `learn` | Explanation, protected first-implementation support, debugging, verification, and pattern repetition for learning work | Replace the protected first implementation or define product scope | Strong explanation and staged debugging |
+| `work` | Implementation, verification, and completion reporting for practical work | Expand scope without approval or infer user approval | Strong autonomous execution and tool use |
+| `ops` | Browser, console, document, release preparation, and other operational work | Issue product plans or perform irreversible external submission for the user | Appropriate tool access |
 
-The pair is named after pair programming deliberately: it works alongside you and never takes the keyboard away — which is the entire philosophy of §5.1 in one word.
+Separate roles across sessions or subagents when useful. When one agent must take multiple roles, state each transition and preserve file ownership and review boundaries. The point of role separation is not the model name but **who decides what and who proves what**.
 
-Roles are enforced socially, not technically — by a permissions table in the rules file that every session auto-loads. In practice this works: a session that knows it is `pair` will decline to edit the plan and will leave a proposal note instead. The human is the escalation path for violations.
+## 3. Collaboration profiles
 
-## 2. The files
+At project start, the AI must not infer the profile. It asks the user to choose one of the following and records the answer in `PROJECT_RULES.md`. It does not ask again unless the user changes the selection.
 
-| File | Owner (write) | Purpose |
+- `learning`: The human owns the first implementation mapped to the learning goal. `learn` provides explanation, examples, verification, debugging, and repeated application.
+- `practical`: `work` directly implements the approved scope while synchronizing the user's and AI's working methods in both directions.
+- `mixed`: Each task declares `learning` or `practical` and loads only the corresponding profile document and role.
+
+Do not duplicate common rules in each profile. `collaboration/profiles/learning.md` and `collaboration/profiles/practical.md` contain only differing defaults. If deadlines or circumstances change, `lead` records the proposed profile change and the user approves it. Every learning guardrail needs a release condition; otherwise it becomes permanent ceremony.
+
+## 4. Files and ownership
+
+The distributed unit is the entire `template/` directory. After copying it, `project/` is the sole development-project root and `collaboration/` is the surrounding AI-collaboration state.
+
+Location follows lifecycle, not topic or author. Ask: **Would the development project still need this file if detached from the harness?** If yes, it belongs in `project/`. If not, it belongs in `collaboration/`. Discussion history stays outside; accepted product truth is distilled into project-owned code, tests, configuration, ADRs, or documentation when needed.
+
+| File | Primary owner | Purpose |
 |---|---|---|
-| `CLAUDE.md` (repo root) | lead | The harness entry point. Auto-loaded by every session: roles, permissions, cycle, guardrails |
-| `roadmap.md` | lead | Cross-project strategy, pipeline, research backlog, rolled-up lessons |
-| `.memory/lead_memory.md` | lead | Decisions log + **project-state snapshot** (the handoff mechanism, §4) |
-| `.memory/pair_memory.md` | pair | Tool/engine knowledge that transfers across projects |
-| `.memory/ops_memory.md` | ops | Ops-specific know-how and environment notes |
-| `projects/<P>/.ideas/project.md` | lead | Spec: concept + a **feature ↔ learning-goal mapping** (§5.1) |
-| `projects/<P>/.ideas/plan.md` | lead | Milestones, completion criteria, per-milestone retrospective rollups |
-| `projects/<P>/.ideas/todo.md` | lead, pair, ops | The task table. Single source of truth for work state |
-| `projects/<P>/.ideas/pair.md` | pair | Dated work log: lessons, decisions, traps (§6) |
+| `PROJECT_RULES.md` | lead | Common rules, authority, selected collaboration profile, and overrides |
+| `collaboration/profiles/learning.md` | harness | Defaults added only for learning work |
+| `collaboration/profiles/practical.md` | harness | Defaults added only for practical work |
+| `collaboration/brief.md` | lead | Current product contract and scope |
+| `collaboration/plan.md` | lead | Milestones and acceptance criteria |
+| `collaboration/tasks.md` | lead + execution role | Single source of truth for tracked task state |
+| `collaboration/decisions.md` | lead | Dated discussion outcomes, changes, and reversals |
+| `collaboration/worklog.md` | learn + work + ops | Implementation, commands, verification, failures, and causes |
+| `collaboration/memory/lead_memory.md` | lead | Concise starting snapshot for the next lead session |
+| `collaboration/memory/learn_memory.md` | learn | Reusable technical knowledge and environment traps from learning work |
+| `collaboration/memory/work_memory.md` | work | Practical continuity, technical knowledge, and collaboration fit |
+| `collaboration/memory/ops_memory.md` | ops | Reusable operational environment and external-procedure knowledge |
+| `project/` | product | Actual source, assets, tests, configuration, and project-owned documents |
 
-## 3. The cycle
+Keep only currently true conditions in `brief.md`; move the history of past choices to `decisions.md`. Archive task tables and logs at milestone close. Memory files must not duplicate the full history.
 
+## 5. Work cycles
+
+```text
+[learning]
+[lead] issue a task with a learning goal, first attempt, and release condition
+   ↓
+[human + learn] first implementation → debugging and verification → pattern repetition → DONE
+
+[practical]
+[user or lead] request scope and outcome
+   ↓
+[work] implementation → risk-proportional verification → concise completion report
 ```
-[lead]  update plan.md → issue task batch in todo.md
-    ↓
-[pair + human]  pick ONE task (DOING) → execute → DONE + result note
-                → record lessons in pair.md
-    ↓
-[lead]  review DONE → REVIEWED, roll lessons up into plan.md → issue next batch
-```
 
-Statuses: `TODO → DOING → DONE → REVIEWED`, plus `BLOCKED` (reason required; lead resolves first). One DOING per pair at a time. Every task batch ends with a git commit.
+Tracked work uses `TODO → DOING → DONE → REVIEWED`; `BLOCKED` records the cause and required input. Learning work focuses on one task by default. Practical work may treat an explicit user request as the task, run non-conflicting subwork in parallel, and scale documentation to risk and handoff needs.
 
-The rollup step is what makes this a learning system rather than a task tracker: the lead's milestone retrospective distills the pair log into principles, carried forward into the next batch and the next project.
+Do not record `decision`, `implementation`, `verification`, and `user approval` as the same state. "We decided to add it" is not evidence that it works.
 
-## 4. Memory protocol
+## 6. Human authority
 
-- **Start:** every session reads its role's files (listed in the rules file) before doing anything.
-- **End:** every session writes back what changed. The lead additionally overwrites a **project-state snapshot** section in its memory file — current milestone, pending confirmations, what to check first next time.
-- **Handoff = snapshot, not transcript.** A new session resumes from the snapshot. Anything not written down is deliberately lost; this forces honest, complete records.
-- **Promotion rule:** project-specific lessons live in the project's `pair.md`; anything reusable across projects gets promoted to `.memory/pair_memory.md`. The promotion decision itself is a useful review act.
+- The human makes final decisions about product concept, scope expansion, costs, accounts, publication, submission, and release.
+- The AI may make reversible file changes and run verification within the approved scope.
+- Before irreversible external work, messages affecting other people, or legal claims about qualifications, business status, or ratings, verify current evidence and authority.
+- Set commit and push policy at project start. If unset, prepare the changes but confirm before performing those actions.
+- Identify and preserve user changes. Do not clean unrelated dirty-worktree content.
 
-## 5. Guardrails
+## 7. Evidence priority
 
-### 5.1 Learning-goal protection (the core rule)
+`Actual target-environment behavior > official documentation > reliable primary sources > search results > AI memory`.
 
-During a declared learning phase, **the first implementation of every feature belongs to the human.** The spec encodes this: each feature maps to a learning goal ("checkpoint system → server scripts, touch events"), so skipping the human implementation visibly breaks the spec's purpose, not just a preference.
+- Recheck policies, prices, versions, and console UI whenever they are used.
+- Local browser testing is not substitute evidence for native bridges or real devices.
+- Verify visual work by rendering at the target size, not only by inspecting computed styles or the DOM.
+- When deriving from an approved reference, preserve its relationships and values instead of recreating them by eye.
+- Test randomness, time, and boundary behavior with simulation or deterministic checks in addition to code reading.
 
-The pair's share: reference snippets, step-by-step editor guidance, post-hoc verification, debugging help, and repetitive application of a pattern the human already built once (e.g. human builds stage 1's checkpoint; pair replicates it for stages 2–6).
+## 8. Artifact verification
 
-**Sunset clause:** the rule names its own end. When the learning phase closes, the lead relaxes it in writing and productivity becomes the priority. A guardrail without a sunset becomes ritual.
+Treat release artifacts as verification targets distinct from source code.
 
-### 5.2 Tool-automation guardrails (editor MCP or similar)
+1. Confirm that the artifact was created after the latest source change.
+2. Compare manifests, lockfiles, and versions embedded in the bundle.
+3. Record test and production-build commands.
+4. Record file size and hash.
+5. Recheck the core flow in the actual upload or test environment.
 
-If the AI can drive the tool directly (execute code in the editor, insert assets, capture screens), split capabilities by role:
+A correct-looking settings screen does not prove that the binary signature, manifest, or bundled files are correct. Trust the artifact, not the setting.
 
-- **pair:** full toolset, under rules: destructive operations (delete, bulk modify) require human approval first; after any edit, self-verify with a read tool; report a change summary so the human saves and commits.
-- **lead:** strictly read-only tools (inspect, search, console output, screenshots) — and **not** the code-execution tool even "for queries," because arbitrary execution cannot be guaranteed side-effect-free. Draw the line at tool level, not intent level: tool-level boundaries are auditable.
-- **Binary artifacts have no diff.** If project files are opaque (e.g. engine scene files), the commit is the only rollback point — commit cadence is a safety mechanism, not hygiene.
-- **Don't trust "saved."** Editor sessions expire, saves fail silently. Before committing, re-inspect actual state with a read tool rather than trusting anyone's report — including the human's.
+## 9. External platforms and deadlines
 
-### 5.3 Truth hierarchy
+`Development complete`, `test uploaded`, `review requested`, `released`, and `event submitted` are different states. Do not assume that information required by one state blocks another. For deadline work, break the official procedure into a staged checklist and separate the minimum submission path from full release preparation.
 
-`actual behavior on the machine > official docs > web search > AI prior knowledge.`
+Identify console-dependent work early. Mark account actions the AI cannot perform as user-owned, and prepare the required values, evidence, and meaning of the next action.
 
-Record which level a fact came from. Two corollaries from the field: keyboard shortcuts and UI layouts drift faster than tutorials (verify on device); platform policy (age verification, licensing, monetization terms) is perishable — re-search every time, never cache.
+## 10. Environment and portability
 
-### 5.4 Model choice is a guardrail
+- Project-specific runtimes and caches may live in ignored repository paths.
+- Keep moving a project runtime separate from moving an agent home or credential store.
+- Reproduce runtime and cache paths through one activation script and verify them with actual commands.
+- Use local fallbacks only in development and confirm that release builds exclude them.
 
-Give the lead a frontier model and the pair a mid-tier one — and not (only) for cost.
+## 11. Promoting experience
 
-- **Economics:** lead sessions are short and judgment-dense (review, rollup, planning); pair sessions are long and token-heavy, with scope already narrowed by the todo table. Put the expensive model where judgment concentrates and the efficient one where volume concentrates.
-- **Behavior:** stronger models have a stronger tendency to helpfully overshoot scope and "just do it all" — which is precisely the anti-pattern §5.1 exists to prevent. During a learning phase, capability beyond the role's needs is a liability, not a bonus. A mid-tier pair following explicit guardrails protects your learning better than a frontier pair resisting its own initiative.
-- **Escalation, not upgrade:** when the pair stalls on a root-cause hunt, don't reach for a bigger model — push the problem to lead review. That boundary is what the cycle is for. (In the founding case, every deep-debugging episode was resolved by a mid-tier pair under these rules.)
+Keep project-specific collaboration facts in `collaboration/worklog.md`. Promote only principles that apply beyond the project into `collaboration/memory/` or this methodology. After project completion, write a case using `docs/cases/_template.md`.
 
-## 6. Logging conventions
+A useful case contains more than a success list:
 
-- Format: `date / task-id / lesson·decision·trap`, one line each, in the project's `pair.md`.
-- **Decision ≠ implementation.** Recording "decided to add X" and "implemented X" identically caused our one real process failure (a feature everyone believed existed). State which one it is.
-- Log failures with their root cause, not just the fix. The founding case's most valuable entries are the three bugs that shared one cause.
-
-## 7. Beyond game engines
-
-Nothing above is engine-specific. The harness fits any domain where (a) you are deliberately learning, (b) work spans many sessions, and (c) an AI could do the work for you — which is exactly when it shouldn't. Swap "engine" for a 3D modeling suite, a DAW, an infrastructure stack; the roles, files, cycle, and guardrails carry over unchanged. When your project ends, write it up with the [case template](cases/_template.md).
+- Observed symptoms and exact errors
+- Actual causes and failed approaches
+- Separate human and AI contributions
+- Rules to change for the next project
+- Verifiable results such as test counts, builds, and submission states
