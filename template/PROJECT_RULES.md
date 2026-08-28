@@ -96,4 +96,4 @@ When one agent must take multiple roles, state the transition first and preserve
 - Keep only the current milestone and recent results in `tasks.md`. Move closed tables to `collaboration/archive/`.
 - Keep evidence in `worklog.md` at the depth required by the selected profile; archive it by milestone when useful.
 - Role memories contain only the next-session starting point and reusable principles. Do not duplicate the full worklog.
-- After project completion, write a case using `docs/cases/_template.md` and promote only general lessons into the harness.
+- After project completion, write a case using the source harness repository's `cases/_template.md` and promote only general lessons into the harness.

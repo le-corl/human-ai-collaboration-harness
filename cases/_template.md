@@ -2,6 +2,8 @@
 
 updated: {YYYY-MM-DD}
 
+Use this template with the repository's [methodology](../METHODOLOGY.md).
+
 Write this file from the actual `brief`, `plan`, `tasks`, `decisions`, and `worklog`. Remove account details, personal data, and private business information, but preserve tool names, APIs, error text, and numbers as evidence.
 
 ## Context

@@ -1,4 +1,4 @@
-# Human-AI collaboration harness methodology
+# Human-AI Collaboration Harness Methodology
 
 updated: 2026-08-28
 
@@ -124,7 +124,7 @@ Identify console-dependent work early. Mark account actions the AI cannot perfor
 
 ## 11. Promoting experience
 
-Keep project-specific collaboration facts in `collaboration/worklog.md`. Promote only principles that apply beyond the project into `collaboration/memory/` or this methodology. After project completion, write a case using `docs/cases/_template.md`.
+Keep project-specific collaboration facts in `collaboration/worklog.md`. Promote only principles that apply beyond the project into `collaboration/memory/` or this methodology. After project completion, write a case using [`cases/_template.md`](cases/_template.md).
 
 A useful case contains more than a success list:
 
